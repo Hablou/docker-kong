@@ -94,10 +94,8 @@ services:
       KONG_PG_SSL_VERIFY: '${KONG_PG_SSL_VERIFY:-off}'
       KONG_PG_SSL_VERSION: '${KONG_PG_SSL_VERSION:-tlsv1_2}'
       KONG_PLUGINS: 'bundled,kong-openid-connect'
-    volumes:
-      - ./kong:/kong
     command: >
       sh -ec '
-        kong config db_import /kong/declarative/kong.yaml
+        kong config db_import /opt/kong-bootstrap/declarative/kong.yaml
       '
     restart: 'no'

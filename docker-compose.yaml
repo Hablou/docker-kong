@@ -12,16 +12,18 @@ services:
       KONG_PG_DATABASE: ${NEON_PG_DATABASE}
       KONG_PG_USER: ${NEON_PG_USER}
       KONG_PG_PASSWORD: ${NEON_PG_PASSWORD}
-      KONG_PG_SSL: "on"
-      KONG_PG_SSL_VERIFY: "off"
+      KONG_PG_SSL: ${KONG_PG_SSL:-on}
+      KONG_PG_SSL_VERIFY: ${KONG_PG_SSL_VERIFY:-off}
+      KONG_PG_SSL_VERSION: ${KONG_PG_SSL_VERSION:-tlsv1_2}
       KONG_PLUGINS: bundled,kong-openid-connect
     command: >
-      sh -c "
-        kong migrations bootstrap ||
+      sh -ec '
+        kong migrations bootstrap || true
         kong migrations up
-      "
+        kong migrations finish
+      '
     restart: "no"
-
+  
   kong-gateway:
     build:
       context: .

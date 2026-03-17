@@ -8,4 +8,6 @@ RUN apt-get update \
 
 RUN luarocks install kong-openid-connect
 
+COPY kong /opt/kong-bootstrap
+
 USER kong

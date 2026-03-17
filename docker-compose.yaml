@@ -51,34 +51,34 @@ services:
     restart: unless-stopped
 
   kong-admin:
-  build:
-    context: .
-  depends_on:
-    kong-migrations:
-      condition: service_completed_successfully
-  environment:
-    KONG_DATABASE: postgres
-    KONG_PG_HOST: '${NEON_PG_HOST}'
-    KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
-    KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
-    KONG_PG_USER: '${NEON_PG_USER}'
-    KONG_PG_PASSWORD: '${NEON_PG_PASSWORD}'
-    KONG_PG_SSL: '${KONG_PG_SSL:-on}'
-    KONG_PG_SSL_VERIFY: '${KONG_PG_SSL_VERIFY:-off}'
-    KONG_PG_SSL_VERSION: '${KONG_PG_SSL_VERSION:-tlsv1_2}'
-    KONG_PROXY_LISTEN: 'off'
-    KONG_ADMIN_LISTEN: '127.0.0.1:8001'
-    KONG_ADMIN_GUI_LISTEN: '0.0.0.0:8002'
-    KONG_ADMIN_GUI_URL: 'https://kong.api.cloud.hablou.com.br'
-    KONG_ADMIN_GUI_API_URL: 'http://127.0.0.1:8001'
-    KONG_TRUSTED_IPS: '0.0.0.0/0,::/0'
-    KONG_REAL_IP_HEADER: 'X-Forwarded-For'
-    KONG_REAL_IP_RECURSIVE: 'on'
-    KONG_PLUGINS: 'bundled,kong-openid-connect'
-  expose:
-    - '8001'
-    - '8002'
-  restart: unless-stopped
+    build:
+      context: .
+    depends_on:
+      kong-migrations:
+        condition: service_completed_successfully
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: '${NEON_PG_HOST}'
+      KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
+      KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
+      KONG_PG_USER: '${NEON_PG_USER}'
+      KONG_PG_PASSWORD: '${NEON_PG_PASSWORD}'
+      KONG_PG_SSL: '${KONG_PG_SSL:-on}'
+      KONG_PG_SSL_VERIFY: '${KONG_PG_SSL_VERIFY:-off}'
+      KONG_PG_SSL_VERSION: '${KONG_PG_SSL_VERSION:-tlsv1_2}'
+      KONG_PROXY_LISTEN: 'off'
+      KONG_ADMIN_LISTEN: '127.0.0.1:8001'
+      KONG_ADMIN_GUI_LISTEN: '0.0.0.0:8002'
+      KONG_ADMIN_GUI_URL: 'https://kong.api.cloud.hablou.com.br'
+      KONG_ADMIN_GUI_API_URL: 'http://127.0.0.1:8001'
+      KONG_TRUSTED_IPS: '0.0.0.0/0,::/0'
+      KONG_REAL_IP_HEADER: 'X-Forwarded-For'
+      KONG_REAL_IP_RECURSIVE: 'on'
+      KONG_PLUGINS: 'bundled,kong-openid-connect'
+    expose:
+      - '8001'
+      - '8002'
+    restart: unless-stopped
 
   kong-bootstrap:
     build:

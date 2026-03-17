@@ -2,7 +2,10 @@ FROM kong:3.9
 
 USER root
 
-RUN apk add --no-cache git unzip luarocks \
- && luarocks install kong-openid-connect
+RUN apt-get update \
+ && apt-get install -y git unzip luarocks \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN luarocks install kong-openid-connect
 
 USER kong

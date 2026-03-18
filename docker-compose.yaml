@@ -66,11 +66,13 @@ services:
       KONG_PG_SSL: '${KONG_PG_SSL:-on}'
       KONG_PG_SSL_VERIFY: '${KONG_PG_SSL_VERIFY:-off}'
       KONG_PG_SSL_VERSION: '${KONG_PG_SSL_VERSION:-tlsv1_2}'
+
       KONG_PROXY_LISTEN: 'off'
       KONG_ADMIN_LISTEN: '127.0.0.1:8001'
       KONG_ADMIN_GUI_LISTEN: '0.0.0.0:8002'
       KONG_ADMIN_GUI_URL: 'https://kong.api.cloud.hablou.com.br'
       KONG_ADMIN_GUI_API_URL: 'http://127.0.0.1:8001'
+
       KONG_TRUSTED_IPS: '0.0.0.0/0,::/0'
       KONG_REAL_IP_HEADER: 'X-Forwarded-For'
       KONG_REAL_IP_RECURSIVE: 'on'
@@ -99,6 +101,10 @@ services:
       KONG_PLUGINS: 'bundled,kong-openid-connect'
     command: >
       sh -ec '
-        kong config db_import /opt/kong-bootstrap/declarative/kong.yaml
+        if [ -f /opt/kong-bootstrap/declarative/kong.yaml ]; then
+          kong config db_import /opt/kong-bootstrap/declarative/kong.yaml || true
+        else
+          echo "kong.yaml not found, skipping bootstrap import"
+        fi
       '
     restart: 'no'

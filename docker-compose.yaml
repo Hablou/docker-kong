@@ -6,16 +6,22 @@ services:
       context: .
     environment:
       KONG_DATABASE: "postgres"
-      KONG_PG_HOST: "${NEON_PG_HOST}"
+      KONG_PG_HOST: ${NEON_PG_HOST}
+      KONG_PG_PORT: 5432
+      KONG_PG_DATABASE: ${NEON_PG_DATABASE}
+      KONG_PG_USER: ${NEON_PG_USER}
+      KONG_PG_PASSWORD: ${NEON_PG_PASSWORD}
       KONG_PG_SSL: "on"
       KONG_PG_SSL_VERIFY: "off"
-      KONG_DNS_RESOLVER: "1.1.1.1, 8.8.8.8" # Ajuda na resolução do host do Neon
+      KONG_DNS_RESOLVER: "8.8.8.8, 1.1.1.1"
+      KONG_PLUGINS: "bundled,kong-openid-connect"
     command: >
       sh -ec '
-        kong migrations bootstrap --vv && 
-        kong migrations up --vv && 
+        kong migrations bootstrap --vv &&
+        kong migrations up --vv &&
         kong migrations finish --vv
-      ' # Removido o || true para identificar falhas reais
+      '
+    restart: "no"
 
   kong-gateway:
     build:
@@ -25,17 +31,15 @@ services:
         condition: service_completed_successfully
     environment:
       KONG_DATABASE: "postgres"
-      
-      KONG_PG_HOST: "${NEON_PG_HOST}"
-      KONG_PG_PORT: "5432"
-      KONG_PG_DATABASE: "${NEON_PG_DATABASE}"
-      KONG_PG_USER: "${NEON_PG_USER}"
-      KONG_PG_PASSWORD: "${NEON_PG_PASSWORD}"
+      KONG_PG_HOST: ${NEON_PG_HOST}
+      KONG_PG_PORT: 5432
+      KONG_PG_DATABASE: ${NEON_PG_DATABASE}
+      KONG_PG_USER: ${NEON_PG_USER}
+      KONG_PG_PASSWORD: ${NEON_PG_PASSWORD}
       KONG_PG_SSL: "on"
       KONG_PG_SSL_VERIFY: "off"
-      KONG_PG_SSL_VERSION: "tlsv1_2"
+      KONG_DNS_RESOLVER: "8.8.8.8, 1.1.1.1"
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
-      KONG_DNS_RESOLVER: "1.1.1.1, 8.8.8.8"
       KONG_ADMIN_LISTEN: "off"
       KONG_ADMIN_GUI_LISTEN: "off"
       KONG_TRUSTED_IPS: "0.0.0.0/0,::/0"
@@ -54,14 +58,14 @@ services:
         condition: service_completed_successfully
     environment:
       KONG_DATABASE: "postgres"
-      KONG_PG_HOST: "${NEON_PG_HOST}"
-      KONG_PG_PORT: "5432"
-      KONG_PG_DATABASE: "${NEON_PG_DATABASE}"
-      KONG_PG_USER: "${NEON_PG_USER}"
-      KONG_PG_PASSWORD: "${NEON_PG_PASSWORD}"
+      KONG_PG_HOST: ${NEON_PG_HOST}
+      KONG_PG_PORT: 5432
+      KONG_PG_DATABASE: ${NEON_PG_DATABASE}
+      KONG_PG_USER: ${NEON_PG_USER}
+      KONG_PG_PASSWORD: ${NEON_PG_PASSWORD}
       KONG_PG_SSL: "on"
       KONG_PG_SSL_VERIFY: "off"
-      KONG_PG_SSL_VERSION: "tlsv1_2"
+      KONG_DNS_RESOLVER: "8.8.8.8, 1.1.1.1"
       KONG_PROXY_LISTEN: "off"
       KONG_ADMIN_LISTEN: "127.0.0.1:8001"
       KONG_ADMIN_GUI_LISTEN: "0.0.0.0:8002"
@@ -75,30 +79,3 @@ services:
       - "8001"
       - "8002"
     restart: unless-stopped
-
-  kong-bootstrap:
-    build:
-      context: .
-    depends_on:
-      kong-migrations:
-        condition: service_completed_successfully
-    environment:
-      KONG_DATABASE: "postgres"
-      KONG_PG_HOST: "${NEON_PG_HOST}"
-      KONG_PG_PORT: "5432"
-      KONG_PG_DATABASE: "${NEON_PG_DATABASE}"
-      KONG_PG_USER: "${NEON_PG_USER}"
-      KONG_PG_PASSWORD: "${NEON_PG_PASSWORD}"
-      KONG_PG_SSL: "on"
-      KONG_PG_SSL_VERIFY: "off"
-      KONG_PG_SSL_VERSION: "tlsv1_2"
-      KONG_PLUGINS: "bundled,kong-openid-connect"
-    command: >
-      sh -ec '
-        if [ -f /opt/kong-bootstrap/declarative/kong.yaml ]; then
-          kong config db_import /opt/kong-bootstrap/declarative/kong.yaml || true
-        else
-          echo "kong.yaml not found, skipping bootstrap import"
-        fi
-      '
-    restart: "no"

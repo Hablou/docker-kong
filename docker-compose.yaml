@@ -88,7 +88,13 @@ services:
       KONG_ADMIN_GUI_LISTEN: "0.0.0.0:8002"
       KONG_ADMIN_GUI_URL: "https://manager-kong.api.cloud.hablou.com.br"
       KONG_ADMIN_GUI_API_URL: "https://kong.api.cloud.hablou.com.br"
-      KONG_PLUGINS: bundled,kong-openid-connect
+      KONG_PLUGINS: "bundled,kong-openid-connect"
+    command: >
+      sh -ec '
+        /docker-entrypoint.sh kong docker-start &
+        until wget -q -O- http://127.0.0.1:8002/ >/dev/null 2>&1; do sleep 1; done
+        exec socat TCP-LISTEN:8003,fork,bind=0.0.0.0 TCP:127.0.0.1:8002
+      '
     expose:
-      - "8002"
+      - "8003"
     restart: unless-stopped

@@ -7,21 +7,15 @@ services:
     environment:
       KONG_DATABASE: "postgres"
       KONG_PG_HOST: "${NEON_PG_HOST}"
-      KONG_PG_PORT: "5432"
-      KONG_PG_DATABASE: "${NEON_PG_DATABASE}"
-      KONG_PG_USER: "${NEON_PG_USER}"
-      KONG_PG_PASSWORD: "${NEON_PG_PASSWORD}"
       KONG_PG_SSL: "on"
       KONG_PG_SSL_VERIFY: "off"
-      KONG_PG_SSL_VERSION: "tlsv1_2"
-      KONG_PLUGINS: "bundled,kong-openid-connect"
+      KONG_DNS_RESOLVER: "1.1.1.1, 8.8.8.8" # Ajuda na resolução do host do Neon
     command: >
       sh -ec '
-        kong migrations bootstrap --vv || true
-        kong migrations up --vv || true
-        kong migrations finish --vv || true
-      '
-    restart: "no"
+        kong migrations bootstrap --vv && 
+        kong migrations up --vv && 
+        kong migrations finish --vv
+      ' # Removido o || true para identificar falhas reais
 
   kong-gateway:
     build:
@@ -31,6 +25,7 @@ services:
         condition: service_completed_successfully
     environment:
       KONG_DATABASE: "postgres"
+      
       KONG_PG_HOST: "${NEON_PG_HOST}"
       KONG_PG_PORT: "5432"
       KONG_PG_DATABASE: "${NEON_PG_DATABASE}"
@@ -40,6 +35,7 @@ services:
       KONG_PG_SSL_VERIFY: "off"
       KONG_PG_SSL_VERSION: "tlsv1_2"
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
+      KONG_DNS_RESOLVER: "1.1.1.1, 8.8.8.8"
       KONG_ADMIN_LISTEN: "off"
       KONG_ADMIN_GUI_LISTEN: "off"
       KONG_TRUSTED_IPS: "0.0.0.0/0,::/0"

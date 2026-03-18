@@ -5,7 +5,7 @@ services:
     build:
       context: .
     environment:
-      KONG_DATABASE: '${NEON_PG_HOST:+postgres}'
+      KONG_DATABASE: 'postgres'
       KONG_PG_HOST: '${NEON_PG_HOST}'
       KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
       KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
@@ -18,8 +18,8 @@ services:
     command: >
       sh -ec '
         kong migrations bootstrap || true
-        kong migrations up
-        kong migrations finish
+        kong migrations up || true
+        kong migrations finish || true
       '
     restart: 'no'
 
@@ -30,7 +30,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
     environment:
-      KONG_DATABASE: postgres
+      KONG_DATABASE: 'postgres'
       KONG_PG_HOST: '${NEON_PG_HOST}'
       KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
       KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
@@ -57,7 +57,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
     environment:
-      KONG_DATABASE: postgres
+      KONG_DATABASE: 'postgres'
       KONG_PG_HOST: '${NEON_PG_HOST}'
       KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
       KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
@@ -89,7 +89,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
     environment:
-      KONG_DATABASE: postgres
+      KONG_DATABASE: 'postgres'
       KONG_PG_HOST: '${NEON_PG_HOST}'
       KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
       KONG_PG_DATABASE: '${NEON_PG_DATABASE}'

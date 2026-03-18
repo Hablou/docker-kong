@@ -45,7 +45,7 @@ services:
       - "8000"
     restart: unless-stopped
 
-  kong-admin-api:
+  kong-admin:
     build:
       context: .
     depends_on:
@@ -62,33 +62,11 @@ services:
       KONG_PG_SSL_VERIFY: "off"
       KONG_PROXY_LISTEN: "off"
       KONG_ADMIN_LISTEN: "0.0.0.0:8001"
-      KONG_ADMIN_GUI_LISTEN: "off"
-      KONG_PLUGINS: bundled,kong-openid-connect
-    expose:
-      - "8001"
-    restart: unless-stopped
-
-kong-manager:
-    build:
-      context: .
-    depends_on:
-      kong-migrations:
-        condition: service_completed_successfully
-    environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: ${NEON_PG_HOST}
-      KONG_PG_PORT: 5432
-      KONG_PG_DATABASE: ${NEON_PG_DATABASE}
-      KONG_PG_USER: ${NEON_PG_USER}
-      KONG_PG_PASSWORD: ${NEON_PG_PASSWORD}
-      KONG_PG_SSL: "on"
-      KONG_PG_SSL_VERIFY: "off"
-      KONG_PROXY_LISTEN: "off"
-      KONG_ADMIN_LISTEN: "off"
       KONG_ADMIN_GUI_LISTEN: "0.0.0.0:8002"
       KONG_ADMIN_GUI_URL: "https://manager-kong.api.cloud.hablou.com.br"
       KONG_ADMIN_GUI_API_URL: "https://kong.api.cloud.hablou.com.br"
       KONG_PLUGINS: "bundled,kong-openid-connect"
     expose:
       - "8002"
+      - "8001"
     restart: unless-stopped

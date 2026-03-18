@@ -5,7 +5,7 @@ services:
     build:
       context: .
     environment:
-      KONG_DATABASE: postgres
+      KONG_DATABASE: '${NEON_PG_HOST:+postgres}'
       KONG_PG_HOST: '${NEON_PG_HOST}'
       KONG_PG_PORT: '${NEON_PG_PORT:-5432}'
       KONG_PG_DATABASE: '${NEON_PG_DATABASE}'
